@@ -20,23 +20,27 @@
 
                     <div class="d-grid gap-2">
                         <a href="{{ route('reservations.create', ['room_id' => $room->id]) }}" class="btn btn-success">
-                            Reservar esta sala
+                            <i class="bi bi-calendar-plus"></i> Reservar esta sala
                         </a>
                     </div>
 
-                    @can('admin')
+                    @if(Auth::user()->isAdmin())
                     <div class="mt-4">
                         <h5>Acciones de administrador:</h5>
                         <div class="d-flex gap-2">
-                            <a href="{{ route('rooms.edit', $room) }}" class="btn btn-warning">Editar</a>
+                            <a href="{{ route('rooms.edit', $room) }}" class="btn btn-warning">
+                                <i class="bi bi-pencil"></i> Editar
+                            </a>
                             <form action="{{ route('rooms.destroy', $room) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar esta sala?')">Eliminar</button>
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar esta sala?')">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </button>
                             </form>
                         </div>
                     </div>
-                    @endcan
+                    @endif
                 </div>
             </div>
         </div>

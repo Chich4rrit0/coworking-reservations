@@ -9,6 +9,16 @@ use Illuminate\Support\Facades\Auth;
 class RoomController extends Controller
 {
     /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    
+    /**
      * Display a listing of the resource.
      */
     public function index()
@@ -22,7 +32,10 @@ class RoomController extends Controller
      */
     public function create()
     {
-        $this->authorize('create', Room::class);
+        if (!Auth::user()->isAdmin()) {
+            abort(403, 'No tienes permiso para crear salas.');
+        }
+        
         return view('rooms.create');
     }
 
@@ -31,7 +44,9 @@ class RoomController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('create', Room::class);
+        if (!Auth::user()->isAdmin()) {
+            abort(403, 'No tienes permiso para crear salas.');
+        }
         
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -57,7 +72,10 @@ class RoomController extends Controller
      */
     public function edit(Room $room)
     {
-        $this->authorize('update', $room);
+        if (!Auth::user()->isAdmin()) {
+            abort(403, 'No tienes permiso para editar salas.');
+        }
+        
         return view('rooms.edit', compact('room'));
     }
 
@@ -66,7 +84,9 @@ class RoomController extends Controller
      */
     public function update(Request $request, Room $room)
     {
-        $this->authorize('update', $room);
+        if (!Auth::user()->isAdmin()) {
+            abort(403, 'No tienes permiso para editar salas.');
+        }
         
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -84,7 +104,9 @@ class RoomController extends Controller
      */
     public function destroy(Room $room)
     {
-        $this->authorize('delete', $room);
+        if (!Auth::user()->isAdmin()) {
+            abort(403, 'No tienes permiso para eliminar salas.');
+        }
         
         $room->delete();
 

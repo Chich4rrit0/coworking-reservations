@@ -21,26 +21,37 @@
                         <div class="row mt-3">
                             <div class="col-md-6 mb-3">
                                 <div class="d-grid">
-                                    <a href="{{ route('rooms.index') }}" class="btn btn-primary">Ver salas disponibles</a>
+                                    <a href="{{ route('rooms.index') }}" class="btn btn-primary">
+                                        <i class="bi bi-building"></i> Ver salas disponibles
+                                    </a>
                                 </div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <div class="d-grid">
-                                    <a href="{{ route('reservations.create') }}" class="btn btn-success">Hacer una reserva</a>
+                                    <a href="{{ route('reservations.create') }}" class="btn btn-success">
+                                        <i class="bi bi-calendar-plus"></i> Hacer una reserva
+                                    </a>
                                 </div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <div class="d-grid">
-                                    <a href="{{ route('reservations.index') }}" class="btn btn-info">Mis reservas</a>
+                                    <a href="{{ route('reservations.index') }}" class="btn btn-info">
+                                        <i class="bi bi-calendar-check"></i> Mis reservas
+                                        @if(Auth::user()->isAdmin() && isset($pendingReservationsCount) && $pendingReservationsCount > 0)
+                                            <span class="badge bg-danger">{{ $pendingReservationsCount }}</span>
+                                        @endif
+                                    </a>
                                 </div>
                             </div>
-                            @can('admin')
+                            @if(Auth::user()->isAdmin())
                             <div class="col-md-6 mb-3">
                                 <div class="d-grid">
-                                    <a href="{{ route('admin.dashboard') }}" class="btn btn-warning">Panel de administración</a>
+                                    <a href="{{ route('admin.dashboard') }}" class="btn btn-warning">
+                                        <i class="bi bi-speedometer2"></i> Panel de administración
+                                    </a>
                                 </div>
                             </div>
-                            @endcan
+                            @endif
                         </div>
                     </div>
                 </div>

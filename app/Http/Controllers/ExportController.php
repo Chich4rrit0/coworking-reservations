@@ -12,12 +12,21 @@ use Carbon\Carbon;
 class ExportController extends Controller
 {
     /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware('can:admin');
+    }
+    
+    /**
      * Export reservations to Excel.
      */
     public function exportReservations()
     {
-        $this->authorize('exportReservations', Reservation::class);
-
         $reservations = Reservation::with(['user', 'room'])->get();
         $rooms = Room::all();
 
@@ -54,24 +63,35 @@ class ExportController extends Controller
 
         // Set headers for stats
         $statsSheet->setCellValue('A1', 'Sala');
-        $statsSheet->setCellValue('B1', 'Total Horas Reservadas');
+        $statsSheet->setCellValue('B1', 'Día');
+        $statsSheet->setCellValue('C1', 'Total Horas Reservadas');
 
-        // Calculate total hours per room
+        // Calculate total hours per room per day
         $row = 2;
         foreach ($rooms as $room) {
-            $totalHours = 0;
             $roomReservations = $room->reservations()->where('status', 'accepted')->get();
             
+            // Group reservations by day
+            $reservationsByDay = [];
             foreach ($roomReservations as $reservation) {
+                $day = $reservation->start_time->format('Y-m-d');
+                if (!isset($reservationsByDay[$day])) {
+                    $reservationsByDay[$day] = 0;
+                }
+                
                 $startTime = Carbon::parse($reservation->start_time);
                 $endTime = Carbon::parse($reservation->end_time);
                 $hours = $endTime->diffInHours($startTime);
-                $totalHours += $hours;
+                $reservationsByDay[$day] += $hours;
             }
             
-            $statsSheet->setCellValue('A' . $row, $room->name);
-            $statsSheet->setCellValue('B' . $row, $totalHours);
-            $row++;
+            // Add each day's stats to the sheet
+            foreach ($reservationsByDay as $day => $hours) {
+                $statsSheet->setCellValue('A' . $row, $room->name);
+                $statsSheet->setCellValue('B' . $row, $day);
+                $statsSheet->setCellValue('C' . $row, $hours);
+                $row++;
+            }
         }
 
         // Auto-size columns
@@ -79,7 +99,7 @@ class ExportController extends Controller
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
         
-        foreach (range('A', 'B') as $col) {
+        foreach (range('A', 'C') as $col) {
             $statsSheet->getColumnDimension($col)->setAutoSize(true);
         }
 

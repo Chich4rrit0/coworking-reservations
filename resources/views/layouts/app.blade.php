@@ -14,6 +14,9 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
     <!-- Custom CSS -->
     <style>
         body {
@@ -45,6 +48,12 @@
             padding: 20px 0;
             margin-top: 50px;
         }
+        .badge-notification {
+            position: relative;
+            top: -10px;
+            left: -5px;
+            font-size: 0.6rem;
+        }
     </style>
 </head>
 <body>
@@ -68,13 +77,18 @@
                             <a class="nav-link" href="{{ route('rooms.index') }}">Salas</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('reservations.index') }}">Mis Reservas</a>
+                            <a class="nav-link" href="{{ route('reservations.index') }}">
+                                Mis Reservas
+                                @if(Auth::user()->isAdmin() && isset($pendingReservationsCount) && $pendingReservationsCount > 0)
+                                    <span class="badge rounded-pill bg-danger badge-notification">{{ $pendingReservationsCount }}</span>
+                                @endif
+                            </a>
                         </li>
-                        @can('admin')
+                        @if(Auth::user()->isAdmin())
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.dashboard') }}">Admin</a>
                             </li>
-                        @endcan
+                        @endif
                     @endauth
                 </ul>
 
@@ -97,6 +111,11 @@
                         <li class="nav-item dropdown">
                             <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                 {{ Auth::user()->name }}
+                                @if(Auth::user()->isAdmin())
+                                    <span class="badge bg-info">Admin</span>
+                                @else
+                                    <span class="badge bg-secondary">Cliente</span>
+                                @endif
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">

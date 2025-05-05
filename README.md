@@ -94,7 +94,6 @@ php artisan serve
 - PHP 8.2
 - MySQL 8.1
 - Bootstrap 5
-- Backpack for Laravel (Admin Panel)
 - PhpSpreadsheet (para exportación a Excel)
 
 ## Licencia

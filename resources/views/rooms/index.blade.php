@@ -7,11 +7,11 @@
             <h2>Salas de Coworking</h2>
         </div>
         <div class="col-md-6 text-end">
-            @can('create', App\Models\Room::class)
+            @if(Auth::user()->isAdmin())
             <a href="{{ route('rooms.create') }}" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Nueva Sala
             </a>
-            @endcan
+            @endif
         </div>
     </div>
 
@@ -25,19 +25,23 @@
                     </div>
                     <div class="card-footer bg-transparent border-top-0">
                         <div class="d-flex justify-content-between">
-                            <a href="{{ route('rooms.show', $room) }}" class="btn btn-sm btn-info">Ver detalles</a>
+                            <a href="{{ route('rooms.show', $room) }}" class="btn btn-sm btn-info">
+                                <i class="bi bi-eye"></i> Ver detalles
+                            </a>
                             <div>
-                                @can('update', $room)
-                                <a href="{{ route('rooms.edit', $room) }}" class="btn btn-sm btn-warning">Editar</a>
-                                @endcan
+                                @if(Auth::user()->isAdmin())
+                                <a href="{{ route('rooms.edit', $room) }}" class="btn btn-sm btn-warning">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </a>
                                 
-                                @can('delete', $room)
                                 <form action="{{ route('rooms.destroy', $room) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar esta sala?')">Eliminar</button>
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar esta sala?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </form>
-                                @endcan
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -47,9 +51,9 @@
             <div class="col-12">
                 <div class="alert alert-info">
                     No hay salas disponibles en este momento.
-                    @can('create', App\Models\Room::class)
+                    @if(Auth::user()->isAdmin())
                         <a href="{{ route('rooms.create') }}" class="alert-link">Crear una nueva sala</a>.
-                    @endcan
+                    @endif
                 </div>
             </div>
         @endforelse

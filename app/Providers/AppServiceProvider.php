@@ -4,6 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\View;
+use App\Models\Reservation;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,7 +23,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Soluciona el error "Specified key was too long"
         Schema::defaultStringLength(191);
+        
+        // Compartir el contador de reservas pendientes con todas las vistas para los administradores
+        View::composer('*', function ($view) {
+            if (Auth::check() && Auth::user()->isAdmin()) {
+                $pendingReservationsCount = Reservation::where('status', 'pending')->count();
+                $view->with('pendingReservationsCount', $pendingReservationsCount);
+            }
+        });
     }
 }

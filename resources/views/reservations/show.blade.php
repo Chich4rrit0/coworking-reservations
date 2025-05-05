@@ -6,8 +6,10 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <span>{{ __('Detalles de la Reserva') }}</span>
-                    <a href="{{ route('reservations.index') }}" class="btn btn-sm btn-secondary">Volver a la lista</a>
+                    <span><i class="bi bi-calendar-event"></i> {{ __('Detalles de la Reserva') }}</span>
+                    <a href="{{ route('reservations.index') }}" class="btn btn-sm btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver a la lista
+                    </a>
                 </div>
 
                 <div class="card-body">
@@ -54,26 +56,30 @@
                         <div class="col-md-8">{{ $reservation->created_at->format('d/m/Y H:i') }}</div>
                     </div>
 
-                    @can('updateStatus', $reservation)
+                    @if(Auth::user()->isAdmin())
                     <div class="mt-4">
-                        <h5>Acciones de administrador:</h5>
+                        <h5><i class="bi bi-gear"></i> Acciones de administrador:</h5>
                         <div class="d-flex gap-2">
                             <form action="{{ route('reservations.update-status', $reservation) }}" method="POST">
                                 @csrf
                                 @method('PATCH')
                                 <input type="hidden" name="status" value="accepted">
-                                <button type="submit" class="btn btn-success">Aceptar</button>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-check-circle"></i> Aceptar
+                                </button>
                             </form>
                             
                             <form action="{{ route('reservations.update-status', $reservation) }}" method="POST">
                                 @csrf
                                 @method('PATCH')
                                 <input type="hidden" name="status" value="rejected">
-                                <button type="submit" class="btn btn-danger">Rechazar</button>
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="bi bi-x-circle"></i> Rechazar
+                                </button>
                             </form>
                         </div>
                     </div>
-                    @endcan
+                    @endif
                 </div>
             </div>
         </div>

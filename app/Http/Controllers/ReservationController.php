@@ -11,17 +11,28 @@ use Carbon\Carbon;
 class ReservationController extends Controller
 {
     /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    
+    /**
      * Display a listing of the resource.
      */
     public function index()
     {
         if (Auth::user()->isAdmin()) {
             $reservations = Reservation::with(['user', 'room'])->latest()->get();
+            $rooms = Room::all();
+            return view('reservations.index', compact('reservations', 'rooms'));
         } else {
             $reservations = Auth::user()->reservations()->with('room')->latest()->get();
+            return view('reservations.index', compact('reservations'));
         }
-        
-        return view('reservations.index', compact('reservations'));
     }
 
     /**
@@ -70,7 +81,11 @@ class ReservationController extends Controller
      */
     public function show(Reservation $reservation)
     {
-        $this->authorize('view', $reservation);
+        // Solo permitir ver la reserva si es el propietario o un administrador
+        if (Auth::user()->id !== $reservation->user_id && !Auth::user()->isAdmin()) {
+            abort(403, 'No tienes permiso para ver esta reserva.');
+        }
+        
         return view('reservations.show', compact('reservation'));
     }
 
@@ -79,7 +94,10 @@ class ReservationController extends Controller
      */
     public function updateStatus(Request $request, Reservation $reservation)
     {
-        $this->authorize('updateStatus', $reservation);
+        // Solo los administradores pueden cambiar el estado
+        if (!Auth::user()->isAdmin()) {
+            abort(403, 'No tienes permiso para cambiar el estado de esta reserva.');
+        }
         
         $validated = $request->validate([
             'status' => 'required|in:pending,accepted,rejected',
@@ -98,7 +116,10 @@ class ReservationController extends Controller
      */
     public function filterByRoom(Request $request)
     {
-        $this->authorize('viewAny', Reservation::class);
+        // Solo los administradores pueden filtrar por sala
+        if (!Auth::user()->isAdmin()) {
+            abort(403, 'No tienes permiso para filtrar reservas por sala.');
+        }
         
         $validated = $request->validate([
             'room_id' => 'required|exists:rooms,id',
