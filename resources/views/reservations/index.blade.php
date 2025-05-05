@@ -35,8 +35,8 @@
                 <div class="card-body">
                     <form action="{{ route('reservations.filter') }}" method="GET" class="row g-3">
                         <div class="col-md-8">
-                            <select name="room_id" class="form-select">
-                                <option value="">Todas las salas</option>
+                            <select name="room_id" class="form-select" required>
+                                <option value="">Selecciona una sala</option>
                                 @foreach($rooms ?? [] as $roomOption)
                                 <option value="{{ $roomOption->id }}" {{ isset($room) && $room->id == $roomOption->id ? 'selected' : '' }}>
                                     {{ $roomOption->name }}

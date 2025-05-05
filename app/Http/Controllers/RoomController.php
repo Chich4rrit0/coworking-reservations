@@ -53,7 +53,10 @@ class RoomController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        Room::create($validated);
+        $room = Room::create([
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+        ]);
 
         return redirect()->route('rooms.index')
             ->with('success', 'Sala creada exitosamente.');
@@ -93,7 +96,10 @@ class RoomController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        $room->update($validated);
+        $room->update([
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+        ]);
 
         return redirect()->route('rooms.index')
             ->with('success', 'Sala actualizada exitosamente.');

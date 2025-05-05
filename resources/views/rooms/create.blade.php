@@ -8,11 +8,21 @@
                 <div class="card-header">{{ __('Crear Nueva Sala') }}</div>
 
                 <div class="card-body">
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
                     <form method="POST" action="{{ route('rooms.store') }}">
                         @csrf
 
                         <div class="mb-3">
-                            <label for="name" class="form-label">{{ __('Nombre') }}</label>
+                            <label for="name" class="form-label">{{ __('Nombre') }} <span class="text-danger">*</span></label>
                             <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
 
                             @error('name')
@@ -23,7 +33,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="description" class="form-label">{{ __('Descripción') }}</label>
+                            <label for="description" class="form-label">{{ __('Descripción') }} <small class="text-muted">(opcional)</small></label>
                             <textarea id="description" class="form-control @error('description') is-invalid @enderror" name="description" rows="4">{{ old('description') }}</textarea>
 
                             @error('description')

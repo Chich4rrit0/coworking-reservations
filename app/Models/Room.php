@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Room extends Model
 {
@@ -30,12 +31,17 @@ class Room extends Model
     /**
      * Check if the room is available at the given time.
      *
-     * @param \DateTime $startTime
+     * @param \DateTime|\Carbon\Carbon $startTime
      * @return bool
      */
-    public function isAvailable(\DateTime $startTime)
+    public function isAvailable($startTime)
     {
-        $endTime = (clone $startTime)->modify('+1 hour');
+        // Asegurarse de que startTime sea un objeto Carbon
+        if (!($startTime instanceof Carbon)) {
+            $startTime = Carbon::parse($startTime);
+        }
+        
+        $endTime = (clone $startTime)->addHour();
         
         return !$this->reservations()
             ->where('status', '!=', 'rejected')

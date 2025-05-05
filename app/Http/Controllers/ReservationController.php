@@ -121,11 +121,12 @@ class ReservationController extends Controller
             abort(403, 'No tienes permiso para filtrar reservas por sala.');
         }
         
-        $validated = $request->validate([
+        // Validar que room_id exista y no esté vacío
+        $request->validate([
             'room_id' => 'required|exists:rooms,id',
         ]);
 
-        $room = Room::findOrFail($validated['room_id']);
+        $room = Room::findOrFail($request->room_id);
         $reservations = $room->reservations()->with('user')->latest()->get();
         $rooms = Room::all();
 
